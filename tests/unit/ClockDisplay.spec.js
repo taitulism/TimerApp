@@ -1,11 +1,8 @@
-import { shallowMount, /* createLocalVue */ } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import ClockDisplay from '@/components/ClockDisplay.vue';
 
 describe('ClockDisplay', () => {
 	describe('Default Rendering (no-props)', () => {
-		let store;
-
-
 		it('renders a zeroed clock', () => {
 			const wrapper = shallowMount(ClockDisplay, { propsData: {} });
 
@@ -125,29 +122,33 @@ describe('ClockDisplay', () => {
 	import { createLocalVue } from '@vue/test-utils'
 	const localVue = createLocalVue();
 	localVue.use(Vuex);
-	
-	beforeEach(() => {
-		store = new Vuex.Store({
-			state: {
-				clockSeconds: 0,
-				clockMinutes: 0,
-				clockHours: 0,
-			},
-			getters: {
-				clockHours (state) {
-					return padWithZero(state.clockHours);
-				},
-				clockMinutes (state) {
-					return padWithZero(state.clockMinutes);
-				},
-				clockSeconds (state) {
-					return padWithZero(state.clockSeconds);
-				},
-			}
-		})
-	}); 
 
-	it('', () => {
-		// const wrapper = shallowMount(ClockDisplay, { store, localVue });
+	describe('', () => {
+		let store;
+			
+		beforeEach(() => {
+			store = new Vuex.Store({
+				state: {
+					clockSeconds: 0,
+					clockMinutes: 0,
+					clockHours: 0,
+				},
+				getters: {
+					clockHours (state) {
+						return padWithZero(state.clockHours);
+					},
+					clockMinutes (state) {
+						return padWithZero(state.clockMinutes);
+					},
+					clockSeconds (state) {
+						return padWithZero(state.clockSeconds);
+					},
+				}
+			})
+		}); 
+
+		it('', () => {
+			// const wrapper = shallowMount(ClockDisplay, { store, localVue });
+		});
 	});
 */
