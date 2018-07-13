@@ -1,78 +1,17 @@
-// import Vuex from 'vuex'
 import { shallowMount, /* createLocalVue */ } from '@vue/test-utils'
 import ClockDisplay from '@/components/ClockDisplay.vue';
 
-// const localVue = createLocalVue();
-
-// localVue.use(Vuex);
-
 describe('ClockDisplay', () => {
-	// describe('Props', () => {
-	// 	describe('second', () => {
-	// 		it('must be a number', () => {
-
-	// 		});
-
-	// 		it('should be a number between 0-59', () => {
-
-	// 		});
-	// 	});
-
-	// 	describe('minutes', () => {
-	// 		it('must be a number', () => {
-
-	// 		});
-
-	// 		it('should be a number between 0-59', () => {
-
-	// 		});
-	// 	});
-
-	// 	describe('hours', () => {
-	// 		it('must be a number', () => {
-
-	// 		});
-
-	// 		it('should be a number between 0-24', () => {
-
-	// 		});
-	// 	});		
-	// });
-
 	describe('Default Rendering (no-props)', () => {
 		let store;
 
-		/*		
-			beforeEach(() => {
-				store = new Vuex.Store({
-					state: {
-						clockSeconds: 0,
-						clockMinutes: 0,
-						clockHours: 0,
-					},
-					getters: {
-						clockHours (state) {
-							return padWithZero(state.clockHours);
-						},
-						clockMinutes (state) {
-							return padWithZero(state.clockMinutes);
-						},
-						clockSeconds (state) {
-							return padWithZero(state.clockSeconds);
-						},
-					}
-				})
-			}); 
-		*/
 
 		it('renders a zeroed clock', () => {
-			// const wrapper = shallowMount(ClockDisplay, { store, localVue });
 			const wrapper = shallowMount(ClockDisplay, { propsData: {} });
 
 			expect(wrapper.text()).toMatch('00:00:00');
 		});
 	});
-
 
 	describe('Rendering with props', () => {
 		describe('seconds', () => {
@@ -118,7 +57,7 @@ describe('ClockDisplay', () => {
 		});
 	});
 
-	describe('when passed with invalid props (NaN or number out of range)', () => {
+	describe('when passed with invalid props\n\t (NaN or number out of range)', () => {
 		let spy;
 
 		beforeEach (() => {
@@ -131,7 +70,7 @@ describe('ClockDisplay', () => {
 			spy.mockRestore();
 		});
 
-		describe('wrong seconds', () => {
+		describe('invalid seconds', () => {
 			it('breaks when `seconds` is not a number', () => {
 				shallowMount(ClockDisplay, { propsData: {seconds: 'hi'} });
 
@@ -147,7 +86,7 @@ describe('ClockDisplay', () => {
 			});
 		});
 
-		describe('wrong minutes', () => {
+		describe('invalid minutes', () => {
 			it('breaks when `minutes` is not a number', () => {
 				shallowMount(ClockDisplay, { propsData: {minutes: 'hi'} });
 
@@ -163,7 +102,7 @@ describe('ClockDisplay', () => {
 			});
 		});
 
-		describe('wrong hours', () => {
+		describe('invalid hours', () => {
 			it('breaks when `hours` is not a number', () => {
 				shallowMount(ClockDisplay, { propsData: {hours: 'hi'} });
 
@@ -180,3 +119,35 @@ describe('ClockDisplay', () => {
 		});
 	});
 });
+
+/*		
+	import Vuex from 'vuex'
+	import { createLocalVue } from '@vue/test-utils'
+	const localVue = createLocalVue();
+	localVue.use(Vuex);
+	
+	beforeEach(() => {
+		store = new Vuex.Store({
+			state: {
+				clockSeconds: 0,
+				clockMinutes: 0,
+				clockHours: 0,
+			},
+			getters: {
+				clockHours (state) {
+					return padWithZero(state.clockHours);
+				},
+				clockMinutes (state) {
+					return padWithZero(state.clockMinutes);
+				},
+				clockSeconds (state) {
+					return padWithZero(state.clockSeconds);
+				},
+			}
+		})
+	}); 
+
+	it('', () => {
+		// const wrapper = shallowMount(ClockDisplay, { store, localVue });
+	});
+*/
