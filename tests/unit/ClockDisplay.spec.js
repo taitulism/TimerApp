@@ -68,14 +68,14 @@ describe('ClockDisplay', () => {
 		});
 
 		describe('invalid seconds', () => {
-			it('breaks when `seconds` is not a number', () => {
+			it('logs an error when `seconds` is not a number', () => {
 				shallowMount(ClockDisplay, { propsData: {seconds: 'hi'} });
 
 				expect(spy).toHaveBeenCalledTimes(1);
 				expect(spy.mock.calls[0][0]).toMatch('Expected Number, got String');
 			});
 
-			it('breaks when `seconds` a number out of range 0-59', () => {
+			it('logs an error when `seconds` a number out of range 0-59', () => {
 				shallowMount(ClockDisplay, { propsData: {seconds: 60} });
 
 				expect(spy).toHaveBeenCalledTimes(1);
@@ -84,14 +84,14 @@ describe('ClockDisplay', () => {
 		});
 
 		describe('invalid minutes', () => {
-			it('breaks when `minutes` is not a number', () => {
+			it('logs an error when `minutes` is not a number', () => {
 				shallowMount(ClockDisplay, { propsData: {minutes: 'hi'} });
 
 				expect(spy).toHaveBeenCalledTimes(1);
 				expect(spy.mock.calls[0][0]).toMatch('Expected Number, got String');
 			});
 
-			it('breaks when `minutes` a number out of range 0-59', () => {
+			it('logs an error when `minutes` a number out of range 0-59', () => {
 				shallowMount(ClockDisplay, { propsData: {minutes: 60} });
 
 				expect(spy).toHaveBeenCalledTimes(1);
@@ -100,14 +100,14 @@ describe('ClockDisplay', () => {
 		});
 
 		describe('invalid hours', () => {
-			it('breaks when `hours` is not a number', () => {
+			it('logs an error when `hours` is not a number', () => {
 				shallowMount(ClockDisplay, { propsData: {hours: 'hi'} });
 
 				expect(spy).toHaveBeenCalledTimes(1);
 				expect(spy.mock.calls[0][0]).toMatch('Expected Number, got String');
 			});
 
-			it('breaks when `hours` a number out of range 0-23', () => {
+			it('logs an error when `hours` a number out of range 0-23', () => {
 				shallowMount(ClockDisplay, { propsData: {hours: 24} });
 
 				expect(spy).toHaveBeenCalledTimes(1);
