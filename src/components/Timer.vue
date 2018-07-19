@@ -81,13 +81,22 @@
 					return this.stop();
 				}
 
-				this.isOn = true;
 				this.mainBtnText = 'Stop';
-				this.startTimeMs = this.mode === STOPWATCH_MODE ? +(new Date()) : this.minutes;
+				this.startTimeMs = +(new Date());
 
-				this.timerRef = setInterval(() => {
-					this.stopwatchTick();
-				}, 100);
+				if (this.mode === STOPWATCH_MODE) {
+					
+					this.timerRef = setInterval(() => {
+						this.stopwatchTick();
+					}, 100);
+				}
+				else {
+					this.timerRef = setInterval(() => {
+						this.timerTick();
+					}, 300);
+				}
+				
+				this.isOn = true;
 			},
 
 			subBtnClicked () {
@@ -99,15 +108,21 @@
 					return;
 				}
 
-				const curMs = +(new Date())
-				const msPassed = this.minutes;
-				const dif = currentTimeMs - this.startTimeMs;
+				const currentTimeMs = +(new Date());
+				const timerMs = this.minutes * 60 * 1000;
 
-				if (dif > 990) {
-					document.title = this.minutes + 1;
-					
-					this.minutes += 1;
-					this.startTimeMs = currentTimeMs;
+				const diff = currentTimeMs - this.startTimeMs;
+				const difMin = diff / 60 / 1000;
+
+				if (diff < timerMs) {
+					const minsPassed = Math.floor(difMin);
+
+					this.minutes -= minsPassed;
+
+					document.title = this.minutes;
+				}
+				else {
+					this.stop();
 				}
 			},
 
@@ -117,9 +132,9 @@
 				}
 
 				const currentTimeMs = +(new Date());
-				const dif = currentTimeMs - this.startTimeMs;
+				const diff = currentTimeMs - this.startTimeMs;
 
-				if (dif > 990) {
+				if (diff > 990) {
 					document.title = this.minutes + 1;
 					
 					this.minutes += 1;
@@ -134,8 +149,8 @@
 
 				// reset values
 				this.timerRef = null;
-				
 				this.mainBtnText = 'Start';
+				document.title = '0';
 			},
 			setInputMode () {
 				this.isInputMode = true;
@@ -198,12 +213,9 @@
 <style scoped lang="scss">
 	.Timer {
 		--btn-height: 50px;
-
 		display: flex;
 		flex-direction: column;
-    	align-items: center;
-		/* height: 200%;
-		overflow: hidden; */
+		align-items: center;
 	}
 
 	.top {
@@ -229,7 +241,6 @@
 		font-size: 2em;
 		background-color: #25a225;
 		color: inherit;
-
 
 		&.running {
 			background-color: #bd1d1d;
