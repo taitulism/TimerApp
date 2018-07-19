@@ -1,6 +1,6 @@
 {
-  "name": "timer",
-  "version": "0.1.0",
+  "name": "Time",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "npm run serve",
