@@ -1,16 +1,19 @@
 <template>
 	<div id="app">
+		<Clock :showSeconds="true"/>
 		<Timer />
 	</div>
 </template>
 
 <script>
 	import Timer from './components/Timer.vue'
+	import Clock from './components/Clock.vue'
 
 	export default {
 		name: 'app',
 		components: {
-			Timer
+			Clock,
+			Timer,
 		}
 	}
 </script>

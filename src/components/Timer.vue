@@ -16,12 +16,18 @@
 			<div class="button-container">
 				<button
 					class="main-btn"
-					:class="{running: isOn}"
+					:class="{running: isRunning}"
 					@click="mainBtnClicked">{{mainBtnText}}
 				</button>
 			</div>
 			<div class="button-container">
-				<button class="sub-btn" @click="subBtnClicked">{{subBtnText}}</button>
+				<button
+					class="sub-btn"
+					:class="{disabled: disableReset}"
+					@click="subBtnClicked"
+				>
+					{{subBtnText}}
+				</button>
 			</div>
 		</div>
 	</div>
@@ -29,6 +35,7 @@
 
 <script>
 	import { mapGetters } from 'vuex';
+	import TM from '../time-machine';
 	import TwoDigitsDisplay from './TwoDigitsDisplay.vue';
 	import TwoDigitsInput from './TwoDigitsInput.vue';
 	// import Button from './Button.vue';
@@ -43,6 +50,19 @@
 			TwoDigitsInput,
 			// Button,
 		},
+		data() {
+			return {
+				minutes: 0,
+				isInputMode: false,
+				timerRef: null,
+				isOn: false,
+				isPaused: false,
+				startTimeMs: 0,
+				mainBtnText: 'Start',
+				subBtnText: 'Reset',
+				mode: STOPWATCH_MODE,
+			};
+		},
 		computed: {
 			...mapGetters([
 				'clockHours',
@@ -52,84 +72,74 @@
 			padMinutes () {
 				return this.padWithZero(this.minutes);
 			},
-			mode () {
-				if (!this.isOn && this.minutes) {
-					return TIMER_MODE;
-				}
-
-				return STOPWATCH_MODE;
+			isOff () {
+				return !this.isOn;
 			},
-		},
-		data() {
-			const ison = this.isOn;
-			return {
-				minutes: 0,
-				isInputMode: false,
-				timerRef: null,
-				isOn: false,
-				startTimeMs: null,
-				mainBtnText: 'Start',
-				subBtnText: 'Reset',
-				mainBtnClasses: {
-					'running': ison,
-				},
-			};
+			isRunning () {
+				return this.isOn && !this.isPaused;
+			},
+			disableReset () {
+				return this.minutes === 0;
+			},
 		},
 		methods: {
 			mainBtnClicked () {
-				if (this.isOn) {
+				if (this.isOn && !this.isPaused) {
 					return this.stop();
 				}
 
 				this.mainBtnText = 'Stop';
-				this.startTimeMs = +(new Date());
+				this.startTimeMs = this.startTimeMs || TM.getNow();
 
 				if (this.mode === STOPWATCH_MODE) {
-					
-					this.timerRef = setInterval(() => {
-						this.stopwatchTick();
-					}, 100);
+					this.startStopwatch();
 				}
 				else {
-					this.timerRef = setInterval(() => {
-						this.timerTick();
-					}, 300);
+					this.mode = TIMER_MODE;
+					this.startTimer();
 				}
 				
 				this.isOn = true;
+				this.isPaused = false;
+			},
+			
+			startStopwatch () {
+				this.timerRef = setInterval(this.stopwatchTick, 100);
+			},
+
+			startTimer () {
+				this.timerRef = setInterval(this.timerTick, 1000);
 			},
 
 			subBtnClicked () {
-				this.minutes = 0;
+				this.reset();
 			},
 
 			timerTick () {
-				if (!this.isOn) {
-					return;
-				}
+				if (this.isOff) return;
 
-				const currentTimeMs = +(new Date());
+				const currentTimeMs = TM.getNow();
 				const timerMs = this.minutes * 60 * 1000;
 
 				const diff = currentTimeMs - this.startTimeMs;
-				const difMin = diff / 60 / 1000;
+				const difMin = diff / 1000;
 
 				if (diff < timerMs) {
-					const minsPassed = Math.floor(difMin);
+					// const minsPassed = Math.floor(difMin);
 
-					this.minutes -= minsPassed;
+					this.minutes -= 1;
 
 					document.title = this.minutes;
 				}
 				else {
 					this.stop();
+					this.reset();
+					// alert('Time\'s up!')
 				}
 			},
 
 			stopwatchTick () {
-				if (!this.isOn) {
-					return;
-				}
+				if (this.isOff) return;
 
 				const currentTimeMs = +(new Date());
 				const diff = currentTimeMs - this.startTimeMs;
@@ -143,13 +153,22 @@
 			},
 
 			stop () {
-				this.isOn = false;
-
+				this.isPaused = true;
+				
 				clearInterval(this.timerRef);
-
-				// reset values
+				
 				this.timerRef = null;
 				this.mainBtnText = 'Start';
+			},
+			
+			reset () {
+				if (this.isPaused) {
+					this.isOn = false;
+					this.isPaused = false;
+				}
+
+				this.startTimeMs = 0;
+				this.minutes = 0;
 				document.title = '0';
 			},
 			setInputMode () {
@@ -163,16 +182,15 @@
 				
 				if (this.isValid(newNum)) {
 					this.minutes = newNum;
-
-					return;
 				}
-
-				if (newNum > 99) {
+				else if (newNum > 99) {
 					this.minutes = 99;
 				}
 				else {
 					this.minutes = 0;
 				}
+
+				this.mode = TIMER_MODE;
 			},
 			scrollHandler(ev) {
 				console.log(222, ev);
@@ -260,5 +278,10 @@
 		color: #79df79;
 		vertical-align: top;
 		font-size: 1.5em;
+
+		&.disabled {
+			border: 1px solid gray;
+			color: gray;
+		}
 	}
 </style>
