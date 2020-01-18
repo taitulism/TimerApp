@@ -38,10 +38,119 @@
 	import TM from '../time-machine';
 	import TwoDigitsDisplay from './TwoDigitsDisplay.vue';
 	import TwoDigitsInput from './TwoDigitsInput.vue';
+	import ting from './ting';
 	// import Button from './Button.vue';
 
 	const STOPWATCH_MODE = 0;
 	const TIMER_MODE = 1;
+
+	let audioCtx;
+	let aryBfr;
+	let audioSrc;
+	// let fileContent;
+
+
+	// function getUploadedContent () {
+	// 	return new Promise((resolve) => {
+	// 		readAs(ting, 'txt').then((content) => {
+	// 			resolve(content);
+	// 		})
+	// 	});
+
+	// 	// p.then((resp) => {
+	// 	// 	console.log(resp);
+	// 	// 	fileContent = resp;
+	// 	// })
+	// }
+
+	function dataURItoBlob(dataURI) {
+		// convert base64 to raw binary data held in a string
+		// doesn't handle URLEncoded DataURIs - see SO answer #6850276 for code that does this
+		var byteString = atob(dataURI.split(',')[1]);
+
+		// separate out the mime component
+		var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0]
+
+		// write the bytes of the string to an ArrayBuffer
+		var ab = new ArrayBuffer(byteString.length);
+
+		// create a view into the buffer
+		var ia = new Uint8Array(ab);
+
+		// set the bytes of the buffer to the correct values
+		for (var i = 0; i < byteString.length; i++) {
+			ia[i] = byteString.charCodeAt(i);
+		}
+
+		// write the ArrayBuffer to a blob, and you're done
+		var blob = new Blob([ab], {type: mimeString});
+		return blob;
+
+	}
+
+	function parseUploadedFile () {
+		return new Promise((resolve) => {
+			
+			const b = dataURItoBlob(ting)
+			
+			readAs(b, 'ab').then((_aryBfr) => {
+				aryBfr = _aryBfr;
+				console.log('aryBfr', aryBfr);
+				arrayBufferToAudioBuffer(aryBfr).then(audioBuffer => {
+					audioSrc = audioBuffer
+					resolve(audioBuffer)
+				})
+			})
+		});
+		
+	}
+
+	function playAudioFromSrc () {
+		const source = audioCtx.createBufferSource();
+		source.buffer = audioSrc;
+		source.connect(audioCtx.destination);
+		source.start();
+	}
+
+	function readAs (thing, as) {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+
+			reader.addEventListener('loadend', (e) => {
+				resolve(e.srcElement.result);
+			});
+			reader.addEventListener('error', (e) => {
+				console.log(e);
+				reject('ERROR: readAs');
+			});
+
+			switch (as) {
+				case 'du':
+					reader.readAsDataURL(thing);
+					break;
+				case 'ab':
+					reader.readAsArrayBuffer(thing);
+					break;
+				case 'bs':
+					reader.readAsBinaryString(thing);
+					break;
+				case 'txt':
+				default:
+					reader.readAsText(thing);
+					break;
+			}
+		});
+	}
+
+	function arrayBufferToAudioBuffer(arrayBuffer) {
+        return new Promise((resolve, reject) => {
+            audioCtx = audioCtx || new AudioContext();
+
+            audioCtx.decodeAudioData(arrayBuffer, function (data) {
+                resolve(data)
+            }, reject)
+        })
+    }
 
 	export default {
 		name: 'Timer',
@@ -122,7 +231,7 @@
 				const timerMs = this.minutes * 60 * 1000;
 
 				const diff = currentTimeMs - this.startTimeMs;
-				const difMin = diff / 1000;
+				// const difMin = diff / 1000;
 
 				if (diff < timerMs) {
 					// const minsPassed = Math.floor(difMin);
@@ -134,7 +243,13 @@
 				else {
 					this.stop();
 					this.reset();
+
+					parseUploadedFile().then(playAudioFromSrc)
+					// parseUploadedFile()
+					// playAudioFromSrc()
 					// alert('Time\'s up!')
+					// const audio = new Audio('https://interactive-examples.mdn.mozilla.net/media/examples/t-rex-roar.mp3');
+					// audio.play();
 				}
 			},
 

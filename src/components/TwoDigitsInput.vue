@@ -12,7 +12,7 @@
 </template>
 
 <script>
-	const editingKeys = ['ArrowLeft', 'ArrowRight', 'Delete', 'Backspace'];
+	// const editingKeys = ['ArrowLeft', 'ArrowRight', 'Delete', 'Backspace'];
 
 	export default {
 		name: 'TwoDigitsInput',
@@ -41,9 +41,9 @@
 		},
 	}
 
-	function isInRange (number, min, max) {
-		return (number >= min) && (number <= max);
-	}
+	// function isInRange (number, min, max) {
+	// 	return (number >= min) && (number <= max);
+	// }
 </script>
 
 <style scoped lang="scss">
